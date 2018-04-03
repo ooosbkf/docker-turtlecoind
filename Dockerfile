@@ -32,4 +32,4 @@ RUN apt-get remove -y zip wget && \
 
 EXPOSE ${RPC_BIND_PORT}
 
-CMD su - turtlecoin -c "TurtleCoind --rpc-bind-ip=${RPC_BIND_IP} --rpc-bind-port=${RPC_BIND_PORT}"
+CMD su - turtlecoin -c "TurtleCoind --rpc-bind-ip=${RPC_BIND_IP} --rpc-bind-port=${RPC_BIND_PORT} --enable-cors=\"*\" --enable_blockexplorer"
