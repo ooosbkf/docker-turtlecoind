@@ -1,35 +1,35 @@
 FROM andrewnk/turtlecoin-base
 
-ARG BOOTSTRAP_FILE_LOCATION=https://f000.backblazeb2.com/file/turtle-blockchain/
-ENV BOOTSTRAP_FILE_LOCATION=${BOOTSTRAP_FILE_LOCATION}
-
-ARG BOOTSTRAP_FILE=latest.zip
-ENV BOOTSTRAP_FILE=${BOOTSTRAP_FILE}
-
-ARG RPC_BIND_IP=127.0.0.1
-ENV RPC_BIND_IP=${RPC_BIND_IP}
-
 ARG RPC_BIND_PORT=11898
 ENV RPC_BIND_PORT=${RPC_BIND_PORT}
+
+ARG CHECKPOINTS_FILE_LOCATION=https://github.com/turtlecoin/checkpoints/raw/master/
+ENV CHECKPOINTS_FILE_LOCATION=${CHECKPOINTS_FILE_LOCATION}
+
+ARG CHECKPOINTS_FILE=checkpoints.csv
+ENV CHECKPOINTS_FILE=${CHECKPOINTS_FILE}
+
+ARG TURTLECOIN_DIR=/home/turtlecoin/.TurtleCoin
+ENV TURTLECOIN_DIR=${TURTLECOIN_DIR}
 
 RUN apt-get update && \
     apt-get install -y \
     zip \
     wget
 
-RUN mkdir /home/turtlecoin/.TurtleCoin
+RUN mkdir ${TURTLECOIN_DIR}
 
-WORKDIR /home/turtlecoin/.TurtleCoin
+WORKDIR ${TURTLECOIN_DIR}
 
-RUN wget ${BOOTSTRAP_FILE_LOCATION}${BOOTSTRAP_FILE}
+COPY turtlecoind.conf ${TURTLECOIN_DIR}
 
-RUN unzip ${BOOTSTRAP_FILE} && \
-    rm -fr ${BOOTSTRAP_FILE} && \
-    chown -R turtlecoin:turtlecoin /home/turtlecoin/.TurtleCoin
+RUN wget ${CHECKPOINTS_FILE_LOCATION}${CHECKPOINTS_FILE}
+
+RUN chown -R turtlecoin:turtlecoin ${TURTLECOIN_DIR}
 
 RUN apt-get remove -y zip wget && \
     apt-get autoremove -y
 
 EXPOSE ${RPC_BIND_PORT}
 
-CMD su - turtlecoin -c "TurtleCoind --rpc-bind-ip=${RPC_BIND_IP} --rpc-bind-port=${RPC_BIND_PORT} --enable-cors=\"*\" --enable_blockexplorer"
+CMD su - turtlecoin -c "TurtleCoind --config-file ${TURTLECOIN_DIR}/turtlecoind.conf --load-checkpoints ${TURTLECOIN_DIR}/${CHECKPOINTS_FILE}"
