@@ -14,7 +14,6 @@ ENV TURTLECOIN_DIR=${TURTLECOIN_DIR}
 
 RUN apt-get update && \
     apt-get install -y \
-    zip \
     wget
 
 RUN mkdir ${TURTLECOIN_DIR}
@@ -27,7 +26,7 @@ RUN wget ${CHECKPOINTS_FILE_LOCATION}${CHECKPOINTS_FILE}
 
 RUN chown -R turtlecoin:turtlecoin ${TURTLECOIN_DIR}
 
-RUN apt-get remove -y zip wget && \
+RUN apt-get remove -y wget && \
     apt-get autoremove -y
 
 EXPOSE ${RPC_BIND_PORT}
